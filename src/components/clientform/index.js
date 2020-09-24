@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import "./style.css";
-import firebase from "./firebase";
+import firebase, { storage } from "../firebase";
 
 const Clientform = () => {
   const [client, setClient] = useState({
@@ -10,17 +9,63 @@ const Clientform = () => {
     phone: "",
     message: "",
   });
-
-const {
-    name,
-    company,
-    email,
-    phone, 
-    message
-} = client;
+  const { name, company, email, phone, message } = client;
+  //image upload
+  const [image, setImage] = useState();
+  const [url, setUrl] = useState("");
+  const [error, setError] = useState("");
+  const [progress, setProgress] = useState(0);
 
   const onChange = (e) => {
-    setClient({ ...client, [e.target.name]: e.target.value });
+    setClient({
+      ...client,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const fileType = file["type"];
+      const validImageTypes = ["image/gif", "image/jpeg", "image/png"];
+      if (validImageTypes.includes(fileType)) {
+        setError("");
+        setImage(file);
+      } else {
+        setError("Please select an image to upload");
+      }
+    }
+  };
+
+  const handleSaveImage = () => {
+    if (image) {
+      const uploadTask = storage.ref(`images/${image.name}`).put(image);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setProgress(progress);
+        },
+        (error) => {
+          setError(error);
+        },
+        () => {
+          storage
+            .ref("images")
+            .child(image.name)
+            .getDownloadURL()
+            .then((url) => {
+              setUrl(url);
+              setProgress(0);
+            });
+        }
+      );
+    } else {
+      setError("Error please choose an image to upload");
+    }
   };
 
   const onSubmit = (event) => {
@@ -36,12 +81,15 @@ const {
         message: message,
       })
       .then(() => {
+        handleSaveImage();
+      })
+      .finally(() => {
         setClient({
-            name: "",
-            company: "",
-            email: "",
-            phone: "",
-            message: ""
+          name: "",
+          company: "",
+          email: "",
+          phone: "",
+          message: "",
         });
       });
   };
@@ -67,9 +115,20 @@ const {
           </ul>
         </div>
         <div className="contact">
-          <h3>Join Our Mailing List</h3>
-          <div className="alert">Your message has been sent</div>
+          <h3>New Client Entry Form</h3>
+          <div className="alert">
+            Your contact has been saved and email generated
+          </div>
           <form onSubmit={onSubmit} id="contactForm">
+            <p>
+              <label>Image Upload</label>
+              <div style={{ height: "10px" }}>
+                {progress > 0 ? <progress value={progress} max="100" /> : ""}
+                <p style={{ color: "red" }}>{error}</p>
+              </div>
+              <input type="file" onChange={handleImageChange} />
+            </p>
+            <br></br>
             <p>
               <label>Name</label>
               <input
@@ -116,7 +175,7 @@ const {
               <label>Message</label>
               <textarea
                 name="message"
-                rows="5"
+                rows="4"
                 value={message}
                 id="message"
                 onChange={onChange}
