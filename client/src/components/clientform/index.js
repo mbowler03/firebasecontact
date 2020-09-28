@@ -92,8 +92,7 @@ const Clientform = () => {
           message: "",
         });
       });
-  };
-
+    }
   return (
     <div className="container">
       <h1 className="brand">
@@ -104,10 +103,10 @@ const Clientform = () => {
           <h3>Spinspire Client Contact</h3>
           <ul>
             <li>
-              <i className="fa fa-road"></i> 123 Main Street
+              <i className="fa fa-road"></i> 6318 Arlington Road
             </li>
             <li>
-              <i className="fa fa-phone"></i> (555) 555-5555
+              <i className="fa fa-phone"></i> (904) 638-2918
             </li>
             <li>
               <i className="fa fa-envelope"></i> test@acme.test
@@ -126,7 +125,7 @@ const Clientform = () => {
                 {progress > 0 ? <progress value={progress} max="100" /> : ""}
                 <p style={{ color: "red" }}>{error}</p>
               </div>
-              <input type="file" onChange={handleImageChange} />
+              <input type="file" accept="image/*" capture="camera" onChange={handleImageChange} />
             </p>
             <br></br>
             <p>

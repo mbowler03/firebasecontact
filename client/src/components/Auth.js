@@ -34,13 +34,13 @@ function Auth() {
       {isSignedIn ? (
         <div>
           <button className='signout btn btn-dark' onClick={() => firebase.auth().signOut()}>Sign Out</button>
-          <h1>Welcome {firebase.auth().currentUser.displayName}</h1>
           <div className="photo">
           <img
-          style={{height: '200px'}}
+          style={{height: '100px'}}
               alt="profile picture"
               src={firebase.auth().currentUser.photoURL}
             />
+             <h1>Welcome {firebase.auth().currentUser.displayName}</h1>
         </div>
           <ClientForm />
         </div>
