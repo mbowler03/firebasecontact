@@ -68,8 +68,29 @@ const Clientform = () => {
     }
   };
 
+  async function sendMail(e) {
+    // e.preventDefault();
+    const url = "//localhost:3001/send";
+    const res = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        name: name,
+        company: company,
+        email: email,
+        phone: phone,
+        message: message,
+      }),
+    });
+    const json = await res.json();
+    console.log(json);
+  }
+
   const onSubmit = (event) => {
     event.preventDefault();
+    sendMail();
     firebase
       .firestore()
       .collection("clients")
@@ -92,6 +113,8 @@ const Clientform = () => {
           message: "",
         });
       });
+      
+     console.log("firebase submitted"); 
     }
   return (
     <div className="container">
@@ -118,7 +141,7 @@ const Clientform = () => {
           <div className="alert">
             Your contact has been saved and email generated
           </div>
-          <form onSubmit={onSubmit} id="contactForm">
+          <form onSubmit={sendMail, onSubmit} id="contactForm">
             <p>
               <label>Image Upload</label>
               <div style={{ height: "10px" }}>
